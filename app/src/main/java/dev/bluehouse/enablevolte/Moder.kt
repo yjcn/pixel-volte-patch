@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.os.Build.VERSION_CODES
+import android.os.IBinder
 import android.os.IInterface
 import android.os.PersistableBundle
 import android.telephony.CarrierConfigManager
@@ -35,15 +36,22 @@ open class Moder {
         }
     }
 
-    // 使用反射获取ServiceManager
-    private fun getServiceBinder(serviceName: String): Any? {
-        return try {
+    // 使用反射获取ServiceManager，明确返回IBinder类型
+    private fun getServiceBinder(serviceName: String): IBinder {
+        try {
             val serviceManagerClass = Class.forName("android.os.ServiceManager")
             val getServiceMethod = serviceManagerClass.getMethod("getService", String::class.java)
-            getServiceMethod.invoke(null, serviceName)
+            val binder = getServiceMethod.invoke(null, serviceName)
+
+            // 添加明确的类型转换
+            if (binder != null) {
+                return binder as IBinder
+            } else {
+                throw RuntimeException("Service $serviceName not found")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to get service: $serviceName", e)
-            null
+            throw RuntimeException("Failed to get service: $serviceName", e)
         }
     }
 
@@ -51,28 +59,28 @@ open class Moder {
     protected val carrierConfigLoader: ICarrierConfigLoader
         get() = loadCachedInterface {
             ICarrierConfigLoader.Stub.asInterface(
-                ShizukuBinderWrapper(getServiceBinder("carrier_config"))
+                ShizukuBinderWrapper(getServiceBinder("carrier_config")),
             )
         }
 
     protected val telephony: ITelephony
         get() = loadCachedInterface {
             ITelephony.Stub.asInterface(
-                ShizukuBinderWrapper(getServiceBinder("phone"))
+                ShizukuBinderWrapper(getServiceBinder("phone")),
             )
         }
 
     protected val phoneSubInfo: IPhoneSubInfo
         get() = loadCachedInterface {
             IPhoneSubInfo.Stub.asInterface(
-                ShizukuBinderWrapper(getServiceBinder("iphonesubinfo"))
+                ShizukuBinderWrapper(getServiceBinder("iphonesubinfo")),
             )
         }
 
     protected val sub: ISub
         get() = loadCachedInterface {
             ISub.Stub.asInterface(
-                ShizukuBinderWrapper(getServiceBinder("isub"))
+                ShizukuBinderWrapper(getServiceBinder("isub")),
             )
         }
 }
