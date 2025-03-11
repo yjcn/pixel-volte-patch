@@ -95,7 +95,7 @@ class CarrierModer(private val context: Context) : Moder() {
         get() {
             val sub = this.loadCachedInterface { sub }
             return try {
-                sub.getActiveSubscriptionInfoList(null, null)
+                sub.getActiveSubscriptionInfoList(null)
             } catch (e: NoSuchMethodError) {
                 // FIXME: lift up reflect as soon as official source code releases
                 val getActiveSubscriptionInfoListMethod = sub.javaClass.getMethod(
