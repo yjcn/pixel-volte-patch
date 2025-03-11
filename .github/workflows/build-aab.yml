@@ -64,7 +64,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.key-alias }}
           KEY_PASSWORD: ${{ secrets.key-password }}
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build_aab.outputs.upload_filename }}
           path: dev.bluehouse.enablevolte.aab

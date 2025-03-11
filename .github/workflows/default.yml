@@ -48,12 +48,12 @@ jobs:
     steps:
       - name: Download APK
         id: download-apk
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-release-apk.outputs.filename }}
       - name: Download App Bundle
         id: download-bundle
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-app-bundle.outputs.filename }}
       - name: Release to GitHub

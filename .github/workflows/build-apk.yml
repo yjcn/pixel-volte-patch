@@ -81,7 +81,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.key-password }}
         if: ${{ env.KEY_PASSWORD == '' }}
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build_apk.outputs.upload_filename }}
           path: dev.bluehouse.enablevolte.apk
