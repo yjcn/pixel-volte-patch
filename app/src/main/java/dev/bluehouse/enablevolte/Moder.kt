@@ -8,7 +8,6 @@ import android.os.IInterface
 import android.os.PersistableBundle
 import android.telephony.CarrierConfigManager
 import android.telephony.SubscriptionInfo
-import android.telephony.TelephonyFrameworkInitializer
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.android.internal.telephony.ICarrierConfigLoader
@@ -36,45 +35,46 @@ open class Moder {
         }
     }
 
+    // 使用反射获取ServiceManager
+    private fun getServiceBinder(serviceName: String): Any? {
+        return try {
+            val serviceManagerClass = Class.forName("android.os.ServiceManager")
+            val getServiceMethod = serviceManagerClass.getMethod("getService", String::class.java)
+            getServiceMethod.invoke(null, serviceName)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get service: $serviceName", e)
+            null
+        }
+    }
+
+    // 通过服务名称获取系统服务
     protected val carrierConfigLoader: ICarrierConfigLoader
-        get() = ICarrierConfigLoader.Stub.asInterface(
-            ShizukuBinderWrapper(
-                TelephonyFrameworkInitializer
-                    .getTelephonyServiceManager()
-                    .carrierConfigServiceRegisterer
-                    .get(),
-            ),
-        )
+        get() = loadCachedInterface {
+            ICarrierConfigLoader.Stub.asInterface(
+                ShizukuBinderWrapper(getServiceBinder("carrier_config"))
+            )
+        }
 
     protected val telephony: ITelephony
-        get() = ITelephony.Stub.asInterface(
-            ShizukuBinderWrapper(
-                TelephonyFrameworkInitializer
-                    .getTelephonyServiceManager()
-                    .telephonyServiceRegisterer
-                    .get(),
-            ),
-        )
+        get() = loadCachedInterface {
+            ITelephony.Stub.asInterface(
+                ShizukuBinderWrapper(getServiceBinder("phone"))
+            )
+        }
 
     protected val phoneSubInfo: IPhoneSubInfo
-        get() = IPhoneSubInfo.Stub.asInterface(
-            ShizukuBinderWrapper(
-                TelephonyFrameworkInitializer
-                    .getTelephonyServiceManager()
-                    .phoneSubServiceRegisterer
-                    .get(),
-            ),
-        )
+        get() = loadCachedInterface {
+            IPhoneSubInfo.Stub.asInterface(
+                ShizukuBinderWrapper(getServiceBinder("iphonesubinfo"))
+            )
+        }
 
     protected val sub: ISub
-        get() = ISub.Stub.asInterface(
-            ShizukuBinderWrapper(
-                TelephonyFrameworkInitializer
-                    .getTelephonyServiceManager()
-                    .subscriptionServiceRegisterer
-                    .get(),
-            ),
-        )
+        get() = loadCachedInterface {
+            ISub.Stub.asInterface(
+                ShizukuBinderWrapper(getServiceBinder("isub"))
+            )
+        }
 }
 
 class CarrierModer(private val context: Context) : Moder() {
