@@ -29,17 +29,12 @@ fun callGetConfigForSubId(obj: Any, subId: Int): PersistableBundle {
     return method.invoke(obj, subId) as PersistableBundle
 }
 
-fun getCarrierConfigWithShizuku(subId: Int): PersistableBundle? {
-    try {
-        val binder = SystemServiceHelper.getSystemService("carrier_config")
-        val carrierConfigLoader = ICarrierConfigLoader.Stub.asInterface(
-            ShizukuBinderWrapper(binder),
-        )
-        return carrierConfigLoader.getConfigForSubId(subId)
-    } catch (e: Exception) {
-        Log.e("CarrierConfig", "Shizuku获取配置失败", e)
-        return null
-    }
+fun getCarrierConfigWithShizuku(subId: Int): PersistableBundle {
+    val binder = SystemServiceHelper.getSystemService("carrier_config")
+    val carrierConfigLoader = ICarrierConfigLoader.Stub.asInterface(
+        ShizukuBinderWrapper(binder),
+    )
+    return carrierConfigLoader.getConfigForSubId(subId)
 }
 
 fun callOverrideConfig(obj: Any, subscriptionId: Int, overrideValues: PersistableBundle?) {
