@@ -28,6 +28,15 @@ fun callGetConfigForSubId(obj: Any, subId: Int): PersistableBundle {
     return method.invoke(obj, subId) as PersistableBundle
 }
 
+fun callOverrideConfig(obj: Any, subscriptionId: Int, overrideValues: PersistableBundle?) {
+    try {
+        val method = obj.javaClass.getMethod("overrideConfig", Int::class.javaPrimitiveType, PersistableBundle::class.java)
+        method.invoke(obj, subscriptionId, overrideValues)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
 open class Moder {
     val KEY_IMS_USER_AGENT = "ims.ims_user_agent_string"
 
@@ -133,7 +142,11 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val iCclInstance = this.loadCachedInterface { carrierConfigLoader }
         val overrideBundle = PersistableBundle()
         fn(overrideBundle)
-        iCclInstance.overrideConfig(this.subscriptionId, overrideBundle, true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            iCclInstance.overrideConfig(this.subscriptionId, overrideBundle, true)
+        } else {
+            callOverrideConfig(iCclInstance, this.subscriptionId, overrideBundle)
+        }
     }
     fun updateCarrierConfig(key: String, value: Boolean) {
         Log.d(TAG, "Setting $key to $value")
@@ -176,7 +189,11 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
 
     fun clearCarrierConfig() {
         val iCclInstance = this.loadCachedInterface { carrierConfigLoader }
-        iCclInstance.overrideConfig(this.subscriptionId, null, true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            iCclInstance.overrideConfig(this.subscriptionId, null, true)
+        } else {
+            callOverrideConfig(iCclInstance, this.subscriptionId, null)
+        }
     }
 
     fun restartIMSRegistration() {
