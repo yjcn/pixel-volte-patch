@@ -16,6 +16,7 @@ import com.android.internal.telephony.IPhoneSubInfo
 import com.android.internal.telephony.ISub
 import com.android.internal.telephony.ITelephony
 import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.SystemServiceHelper
 
 private const val TAG = "CarrierModer"
 
@@ -26,6 +27,19 @@ object InterfaceCache {
 fun callGetConfigForSubId(obj: Any, subId: Int): PersistableBundle {
     val method = obj.javaClass.getMethod("getConfigForSubId", Int::class.javaPrimitiveType)
     return method.invoke(obj, subId) as PersistableBundle
+}
+
+fun getCarrierConfigWithShizuku(subId: Int): PersistableBundle? {
+    try {
+        val binder = SystemServiceHelper.getSystemService("carrier_config")
+        val carrierConfigLoader = ICarrierConfigLoader.Stub.asInterface(
+            ShizukuBinderWrapper(binder),
+        )
+        return carrierConfigLoader.getConfigForSubId(subId)
+    } catch (e: Exception) {
+        Log.e("CarrierConfig", "Shizuku获取配置失败", e)
+        return null
+    }
 }
 
 fun callOverrideConfig(obj: Any, subscriptionId: Int, overrideValues: PersistableBundle?) {
@@ -213,7 +227,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getString(key)
     }
@@ -229,7 +243,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getBoolean(key)
     }
@@ -245,7 +259,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getInt(key)
     }
@@ -261,7 +275,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getLong(key)
     }
@@ -277,7 +291,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getBooleanArray(key)
     }
@@ -293,7 +307,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getIntArray(key)
     }
@@ -309,7 +323,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.getStringArray(key)
     }
@@ -324,7 +338,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            getCarrierConfigWithShizuku(subscriptionId)
         }
         return config.get(key)
     }
