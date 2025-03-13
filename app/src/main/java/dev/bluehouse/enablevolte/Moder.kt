@@ -23,9 +23,9 @@ object InterfaceCache {
     val cache = HashMap<String, IInterface>()
 }
 
-fun callGetConfigForSubId(obj: Any, subId: Int): PersistableBundle {
-    val method = obj.javaClass.getMethod("getConfigForSubId", Int::class.javaPrimitiveType)
-    return method.invoke(obj, subId) as PersistableBundle
+fun callGetConfigForSubId(obj: Any, subId: Int, callingPackage: String): PersistableBundle {
+    val method = obj.javaClass.getMethod("getConfigForSubId", Int::class.javaPrimitiveType, String::class.java)
+    return method.invoke(obj, subId, callingPackage) as PersistableBundle
 }
 
 fun callOverrideConfig(obj: Any, subscriptionId: Int, overrideValues: PersistableBundle?) {
@@ -214,7 +214,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getString(key)
     }
@@ -230,7 +230,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getBoolean(key)
     }
@@ -246,7 +246,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getInt(key)
     }
@@ -262,7 +262,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getLong(key)
     }
@@ -278,7 +278,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getBooleanArray(key)
     }
@@ -294,7 +294,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getIntArray(key)
     }
@@ -310,7 +310,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.getStringArray(key)
     }
@@ -325,7 +325,7 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
         val config = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             iCclInstance.getConfigForSubIdWithFeature(subscriptionId, iCclInstance.defaultCarrierServicePackageName, "")
         } else {
-            callGetConfigForSubId(iCclInstance, subscriptionId)
+            callGetConfigForSubId(iCclInstance, subscriptionId, iCclInstance.defaultCarrierServicePackageName)
         }
         return config.get(key)
     }
