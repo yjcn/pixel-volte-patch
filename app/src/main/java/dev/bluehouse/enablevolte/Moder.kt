@@ -199,7 +199,8 @@ class SubscriptionModer(val subscriptionId: Int) : Moder() {
     fun restartIMSRegistration() {
         val telephony = this.loadCachedInterface { telephony }
         val sub = this.loadCachedInterface { sub }
-        telephony.resetIms(sub.getSlotIndex(this.subscriptionId))
+        telephony.disableIms(sub.getSlotIndex(this.subscriptionId))
+        telephony.enableIms(sub.getSlotIndex(this.subscriptionId))
     }
 
     fun getStringValue(key: String): String {
